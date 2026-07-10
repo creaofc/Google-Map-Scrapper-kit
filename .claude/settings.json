@@ -1,0 +1,21 @@
+{
+  "$comment": "Pre-approves the safe, local commands this kit uses so Claude can scrape on autopilot without a permission prompt each time. All entries are local-only (localhost / this folder's scripts / docker). Nothing here can reach the public internet except the scraper's own outbound calls.",
+  "permissions": {
+    "allow": [
+      "Bash(docker compose up:*)",
+      "Bash(docker compose down:*)",
+      "Bash(docker compose stop:*)",
+      "Bash(docker compose start:*)",
+      "Bash(docker compose ps:*)",
+      "Bash(docker ps:*)",
+      "Bash(curl http://localhost:8080:*)",
+      "Bash(curl -s http://localhost:8080:*)",
+      "Bash(curl http://127.0.0.1:8080:*)",
+      "Bash(./scripts/scrape.sh:*)",
+      "Bash(bash scripts/scrape.sh:*)",
+      "Bash(python3 scripts/scrape.py:*)",
+      "Bash(python scripts/scrape.py:*)"
+    ],
+    "deny": []
+  }
+}

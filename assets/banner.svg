@@ -1,0 +1,83 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Google Maps Scraper Kit">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#111c33"/>
+    </linearGradient>
+    <linearGradient id="pin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.40"/>
+    </filter>
+    <style>
+      .t  { font-family: -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+      .mono { font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="1280" height="360" fill="url(#bg)"/>
+
+  <!-- faint map grid + roads -->
+  <g stroke="#1e293b" stroke-width="1" opacity="0.5">
+    <path d="M0 72 H1280 M0 144 H1280 M0 216 H1280 M0 288 H1280"/>
+    <path d="M160 0 V360 M360 0 V360 M560 0 V360 M760 0 V360 M960 0 V360 M1160 0 V360"/>
+  </g>
+  <g stroke="#10b981" stroke-width="3" opacity="0.16" fill="none" stroke-linecap="round">
+    <path d="M-20 270 C 200 250, 280 110, 520 135 S 980 110, 1300 50"/>
+    <path d="M-20 80 C 260 100, 420 225, 720 215 S 1100 270, 1300 230"/>
+  </g>
+
+  <!-- map pin with magnifier -->
+  <g transform="translate(140,182) scale(0.82)" filter="url(#shadow)">
+    <path d="M0,-95 C 52,-95 96,-54 96,-2 C 96,58 18,112 0,150 C -18,112 -96,58 -96,-2 C -96,-54 -52,-95 0,-95 Z" fill="url(#pin)"/>
+    <circle cx="0" cy="-6" r="40" fill="#0b1220"/>
+    <circle cx="-6" cy="-13" r="19" fill="none" stroke="#34d399" stroke-width="6"/>
+    <line x1="9" y1="6" x2="27" y2="24" stroke="#34d399" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- title + subtitle (kept clear of the card on the right) -->
+  <text x="300" y="128" class="t" font-weight="800" font-size="44" fill="#f8fafc">Google Maps Scraper Kit</text>
+  <text x="302" y="170" class="t" font-weight="400" font-size="21" fill="#94a3b8">Run a free Google&#160;Maps scraper locally, driven by Claude.</text>
+
+  <!-- chips -->
+  <g transform="translate(300,200)">
+    <g>
+      <rect x="0" y="0" rx="22" ry="22" width="170" height="42" fill="#0f213b" stroke="#1f3a5f"/>
+      <circle cx="24" cy="21" r="6" fill="#38bdf8"/>
+      <text x="40" y="28" class="t" font-weight="600" font-size="19" fill="#cbd5e1">Local Docker</text>
+    </g>
+    <g transform="translate(186,0)">
+      <rect x="0" y="0" rx="22" ry="22" width="158" height="42" fill="#0f213b" stroke="#1f3a5f"/>
+      <circle cx="24" cy="21" r="6" fill="#a78bfa"/>
+      <text x="40" y="28" class="t" font-weight="600" font-size="19" fill="#cbd5e1">Claude skill</text>
+    </g>
+    <g transform="translate(360,0)">
+      <rect x="0" y="0" rx="22" ry="22" width="158" height="42" fill="#0f213b" stroke="#1f3a5f"/>
+      <circle cx="24" cy="21" r="6" fill="#34d399"/>
+      <text x="40" y="28" class="t" font-weight="600" font-size="19" fill="#cbd5e1">Clean leads</text>
+    </g>
+  </g>
+
+  <!-- footer url -->
+  <text x="302" y="296" class="mono" font-size="17" fill="#64748b">github.com/Mahanaicoach/google-maps-scraper-kit</text>
+
+  <!-- lead-list card (right side, no overlap with text) -->
+  <g transform="translate(972,86)" filter="url(#shadow)">
+    <rect x="0" y="0" rx="16" ry="16" width="268" height="188" fill="#0f1a30" stroke="#24324d"/>
+    <text x="20" y="34" class="t" font-size="13" letter-spacing="2" fill="#64748b">LEAD&#160;LIST</text>
+    <g>
+      <circle cx="28" cy="72" r="7" fill="#34d399"/>
+      <rect x="46" y="64" rx="5" width="150" height="14" fill="#334155"/>
+      <rect x="46" y="84" rx="5" width="104" height="9" fill="#1f2c44"/>
+      <circle cx="28" cy="116" r="7" fill="#34d399"/>
+      <rect x="46" y="108" rx="5" width="120" height="14" fill="#334155"/>
+      <rect x="46" y="128" rx="5" width="140" height="9" fill="#1f2c44"/>
+      <circle cx="28" cy="160" r="7" fill="#34d399"/>
+      <rect x="46" y="152" rx="5" width="160" height="14" fill="#334155"/>
+      <rect x="46" y="172" rx="5" width="96" height="9" fill="#1f2c44"/>
+    </g>
+  </g>
+</svg>

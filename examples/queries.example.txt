@@ -1,0 +1,7 @@
+# Batch keywords — one per line. Lines starting with # are ignored.
+# Bake the location into each line, OR pass --city to geocode one place for all of them.
+# Run:  python3 scripts/scrape.py --keywords-file examples/queries.example.txt --city "Denver, CO"
+dentists in Denver CO
+orthodontists in Denver CO
+dental hygienists in Denver CO
+pediatric dentists in Denver CO
