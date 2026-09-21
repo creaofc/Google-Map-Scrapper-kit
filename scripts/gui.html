@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crea Leads — Google Maps Scraper Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Base Reset & Variables */
+        :root {
+            --bg-base: #080b11;
+            --bg-surface: rgba(17, 22, 34, 0.75);
+            --bg-surface-hover: rgba(26, 32, 49, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(139, 92, 246, 0.4);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.35);
+            --secondary: #06b6d4;
+            --secondary-glow: rgba(6, 182, 212, 0.35);
+            --success: #10b981;
+            --danger: #ef4444;
+            --font-main: 'Inter', sans-serif;
+            --font-head: 'Outfit', sans-serif;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Container Layout */
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+        }
+
+        /* Header Styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 8px var(--primary-glow));
+        }
+
+        .logo-text h1 {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .docker-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 0.5rem 0.875rem;
+            border-radius: 9999px;
+            font-size: 0.825rem;
+            font-weight: 500;
+            color: var(--success);
+        }
+
+        .docker-badge .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 1.8s infinite;
+        }
+
+        /* Glassmorphic Cards & Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 1.75rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .card-title {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #ffffff;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: color var(--transition-speed);
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: rgba(10, 14, 23, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 0.625rem;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.925rem;
+            outline: none;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .form-control:focus + i {
+            color: var(--primary);
+        }
+
+        /* Gradient Submit Button */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            border-radius: 0.625rem;
+            padding: 0.875rem;
+            color: white;
+            font-weight: 600;
+            font-family: var(--font-head);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed), filter var(--transition-speed);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-submit:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Tracker and Progress UI */
+        .tracker-section {
+            margin-top: 1.5rem;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .tracker-section.active {
+            display: block;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            opacity: 0.5;
+            transition: opacity var(--transition-speed);
+        }
+
+        .step-item.active {
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        .step-item.completed {
+            opacity: 1;
+            color: var(--success);
+        }
+
+        .step-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: background var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .step-item.active .step-icon {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .step-item.completed .step-icon {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 9999px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .progress-bar-fill.indeterminate {
+            width: 40%;
+            position: absolute;
+            animation: loading-slide 1.5s infinite linear;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform var(--transition-speed);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-family: var(--font-head);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Table Card and Filters */
+        .table-card {
+            min-height: 480px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .search-filter {
+            max-width: 320px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-export {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.575rem 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .btn-export:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-export:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Real spreadsheet-like leads table styling */
+        .table-wrapper {
+            flex-grow: 1;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 520px;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: rgba(10, 14, 23, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(20, 26, 40, 0.95);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.875rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-color);
+            font-family: var(--font-head);
+            font-size: 0.85rem;
+            letter-spacing: 0.02em;
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            vertical-align: middle;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Lead Badge Utilities */
+        .lead-title-cell {
+            font-weight: 500;
+            color: white;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.725rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+
+        .badge-muted {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .rating-star {
+            color: #fbbf24;
+            margin-right: 0.25rem;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px var(--success); }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        @keyframes loading-slide {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        @media (max-width: 640px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .table-header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-filter {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top Header Navigation -->
+        <header>
+            <div class="logo-section">
+                <i class="fa-solid fa-map-location-dot logo-icon"></i>
+                <div class="logo-text">
+                    <h1>Crea Leads</h1>
+                    <p>Map Scraper Engine</p>
+                </div>
+            </div>
+            <div class="docker-badge">
+                <div class="pulse-dot"></div>
+                Docker API Connected
+            </div>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <main class="main-grid">
+            
+            <!-- Sidebar: Parameters Panel -->
+            <section class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-sliders"></i>
+                    <h2>Scrape Setup</h2>
+                </div>
+                
+                <form id="scrape-form" onsubmit="event.preventDefault(); startScrape();">
+                    <div class="form-group">
+                        <label for="input-niche">Business Niche / Category</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="input-niche" class="form-control" placeholder="e.g. dental clinics, gyms, cafes" required>
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="input-location">Location (City, State / Country)</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="input-location" class="form-control" placeholder="e.g. Miami, FL or Austin, TX" required>
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="input-limit">Leads Scrape Limit</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="input-limit" class="form-control" min="1" max="500" value="50" required>
+                            <i class="fa-solid fa-list-ol"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-start" class="btn-submit">
+                        <i class="fa-solid fa-circle-play"></i>
+                        Start Scraping Leads
+                    </button>
+                </form>
+
+                <!-- Scraper Stepper / Live Status -->
+                <div id="tracker" class="tracker-section">
+                    <div class="steps-container">
+                        <div id="step-geocode" class="step-item">
+                            <div class="step-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                            <span>Geocoding Location</span>
+                        </div>
+                        <div id="step-submit" class="step-item">
+                            <div class="step-icon"><i class="fa-solid fa-circle-arrow-up"></i></div>
+                            <span>Submitting Container Job</span>
+                        </div>
+                        <div id="step-scraping" class="step-item">
+                            <div class="step-icon"><i class="fa-solid fa-gear fa-spin"></i></div>
+                            <span>Scraping Google Maps</span>
+                        </div>
+                        <div id="step-finished" class="step-item">
+                            <div class="step-icon"><i class="fa-solid fa-circle-check"></i></div>
+                            <span>Finalized & Complete</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Content Area: Stats and Leads View -->
+            <section style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <!-- Stats Overview Row -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div id="stat-total" class="stat-value">0</div>
+                        <div class="stat-label">Total Leads</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="stat-phone" class="stat-value">0</div>
+                        <div class="stat-label">With Phone</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="stat-website" class="stat-value">0</div>
+                        <div class="stat-label">With Website</div>
+                    </div>
+                </div>
+
+                <!-- Table Container Card -->
+                <div class="card table-card">
+                    <div class="table-header-controls">
+                        <div class="input-wrapper search-filter">
+                            <input type="text" id="table-search" class="form-control" style="padding-top:0.5rem; padding-bottom:0.5rem;" placeholder="Search in results..." oninput="filterTable()">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="export-buttons">
+                            <button id="btn-export-csv" class="btn-export" disabled onclick="exportData('csv')">
+                                <i class="fa-solid fa-file-csv"></i> Export CSV
+                            </button>
+                            <button id="btn-export-json" class="btn-export" disabled onclick="exportData('json')">
+                                <i class="fa-solid fa-file-code"></i> Export JSON
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Leads Table -->
+                    <div class="table-wrapper">
+                        <table id="leads-table">
+                            <thead>
+                                <tr>
+                                    <th>Business Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Website</th>
+                                    <th>Category</th>
+                                    <th>Rating</th>
+                                    <th>Reviews</th>
+                                    <th>Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+
+                        <!-- Empty State View -->
+                        <div id="table-empty-state" class="empty-state">
+                            <i class="fa-solid fa-database"></i>
+                            <div>
+                                <h3 id="empty-state-title" style="color:#ffffff; margin-bottom: 0.25rem;">No Leads Scraped Yet</h3>
+                                <p id="empty-state-desc" style="font-size: 0.85rem;">Fill out the parameters on the left and start scraping to extract leads.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let allLeads = [];
+        let pollingInterval = null;
+
+        function startScrape() {
+            const niche = document.getElementById('input-niche').value;
+            const location = document.getElementById('input-location').value;
+            const limit = parseInt(document.getElementById('input-limit').value);
+
+            // Reset UI States
+            const btn = document.getElementById('btn-start');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scraping Leads...';
+            
+            document.getElementById('tracker').classList.add('active');
+            resetSteps();
+            resetStats();
+            clearTable();
+            
+            // Set first step active (Geocoding)
+            setStepState('step-geocode', 'active');
+            setProgressBar(15);
+
+            // Call Backend API
+            fetch('/api/scrape', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ niche, location, limit })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(err => { throw new Error(err.error || 'Server error') });
+                }
+                return res.json();
+            })
+            .then(data => {
+                setStepState('step-geocode', 'completed');
+                setStepState('step-submit', 'completed');
+                setStepState('step-scraping', 'active');
+                setProgressBar(40, true); // set to pulsing loading indicator
+
+                // Start polling status
+                pollJobStatus(data.job_id, limit);
+            })
+            .catch(err => {
+                alert('Scrape initiation failed: ' + err.message);
+                resetUISubmitState();
+            });
+        }
+
+        function pollJobStatus(jobId, limit) {
+            let attempt = 0;
+            pollingInterval = setInterval(() => {
+                attempt++;
+                fetch(`/api/status/${jobId}?limit=${limit}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        clearInterval(pollingInterval);
+                        setStepState('step-scraping', 'completed');
+                        setStepState('step-finished', 'completed');
+                        setProgressBar(100);
+                        
+                        allLeads = data.results || [];
+                        renderLeads(allLeads);
+                        updateStats(allLeads);
+                        resetUISubmitState();
+                    } else if (data.status === 'failed') {
+                        clearInterval(pollingInterval);
+                        alert('Scrape job failed on the scraper container. Your IP might be rate-limited by Google.');
+                        resetUISubmitState();
+                    }
+                    // Keep working
+                })
+                .catch(err => {
+                    clearInterval(pollingInterval);
+                    alert('Error checking status: ' + err.message);
+                    resetUISubmitState();
+                });
+            }, 6000);
+        }
+
+        function renderLeads(leads) {
+            const tbody = document.getElementById('table-body');
+            const emptyState = document.getElementById('table-empty-state');
+            tbody.innerHTML = '';
+
+            if (leads.length === 0) {
+                emptyState.style.display = 'flex';
+                document.getElementById('empty-state-title').textContent = 'No Leads Found';
+                document.getElementById('empty-state-desc').textContent = "Make sure the niche and location are correct. If this was your very first run, the container was busy initializing browser drivers and timed out. Please click 'Start Scraping Leads' again to retry now!";
+                document.getElementById('btn-export-csv').disabled = true;
+                document.getElementById('btn-export-json').disabled = true;
+                updateStats([]);
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            document.getElementById('btn-export-csv').disabled = false;
+            document.getElementById('btn-export-json').disabled = false;
+
+            leads.forEach(lead => {
+                const tr = document.createElement('tr');
+                
+                // Name
+                const tdName = document.createElement('td');
+                tdName.className = 'lead-title-cell';
+                tdName.textContent = lead.title || 'Unknown';
+                tr.appendChild(tdName);
+
+                // Phone
+                const tdPhone = document.createElement('td');
+                if (lead.phone) {
+                    tdPhone.innerHTML = `<span class="badge badge-success"><i class="fa-solid fa-phone"></i> ${lead.phone}</span>`;
+                } else {
+                    tdPhone.innerHTML = `<span class="badge badge-muted">No Phone</span>`;
+                }
+                tr.appendChild(tdPhone);
+
+                // Website
+                const tdWeb = document.createElement('td');
+                if (lead.website) {
+                    tdWeb.innerHTML = `<a href="${lead.website}" target="_blank" style="color:var(--secondary); text-decoration:none;"><i class="fa-solid fa-link"></i> ${cleanURL(lead.website)}</a>`;
+                } else {
+                    tdWeb.innerHTML = `<span class="badge badge-muted">No Website</span>`;
+                }
+                tr.appendChild(tdWeb);
+
+                // Category
+                const tdCat = document.createElement('td');
+                tdCat.textContent = lead.category || '—';
+                tr.appendChild(tdCat);
+
+                // Rating
+                const tdRating = document.createElement('td');
+                if (lead.review_rating) {
+                    tdRating.innerHTML = `<i class="fa-solid fa-star rating-star"></i> ${lead.review_rating}`;
+                } else {
+                    tdRating.textContent = '—';
+                }
+                tr.appendChild(tdRating);
+
+                // Reviews count
+                const tdReviews = document.createElement('td');
+                tdReviews.textContent = lead.review_count || '0';
+                tr.appendChild(tdReviews);
+
+                // Address
+                const tdAddr = document.createElement('td');
+                tdAddr.textContent = lead.address || '—';
+                tdAddr.title = lead.address || '';
+                tr.appendChild(tdAddr);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterTable() {
+            const query = document.getElementById('table-search').value.toLowerCase().trim();
+            if (!query) {
+                renderLeads(allLeads);
+                return;
+            }
+            const filtered = allLeads.filter(lead => {
+                return (lead.title || '').toLowerCase().includes(query) ||
+                       (lead.phone || '').toLowerCase().includes(query) ||
+                       (lead.website || '').toLowerCase().includes(query) ||
+                       (lead.category || '').toLowerCase().includes(query) ||
+                       (lead.address || '').toLowerCase().includes(query);
+            });
+            renderLeads(filtered);
+        }
+
+        function updateStats(leads) {
+            document.getElementById('stat-total').textContent = leads.length;
+            
+            const withPhone = leads.filter(l => l.phone).length;
+            document.getElementById('stat-phone').textContent = withPhone;
+
+            const withWeb = leads.filter(l => l.website).length;
+            document.getElementById('stat-website').textContent = withWeb;
+        }
+
+        function resetStats() {
+            document.getElementById('stat-total').textContent = '0';
+            document.getElementById('stat-phone').textContent = '0';
+            document.getElementById('stat-website').textContent = '0';
+        }
+
+        function clearTable() {
+            document.getElementById('table-body').innerHTML = '';
+            document.getElementById('table-empty-state').style.display = 'flex';
+            document.getElementById('empty-state-title').textContent = 'No Leads Scraped Yet';
+            document.getElementById('empty-state-desc').textContent = 'Fill out the parameters on the left and start scraping to extract leads.';
+            document.getElementById('table-search').value = '';
+            document.getElementById('btn-export-csv').disabled = true;
+            document.getElementById('btn-export-json').disabled = true;
+        }
+
+        function resetSteps() {
+            const steps = ['step-geocode', 'step-submit', 'step-scraping', 'step-finished'];
+            steps.forEach(id => {
+                const el = document.getElementById(id);
+                el.className = 'step-item';
+            });
+        }
+
+        function setStepState(id, state) {
+            const el = document.getElementById(id);
+            if (state === 'active') {
+                el.className = 'step-item active';
+            } else if (state === 'completed') {
+                el.className = 'step-item completed';
+            }
+        }
+
+        function setProgressBar(percent, isIndeterminate = false) {
+            const fill = document.getElementById('progress-bar');
+            fill.className = 'progress-bar-fill';
+            if (isIndeterminate) {
+                fill.classList.add('indeterminate');
+            } else {
+                fill.style.width = percent + '%';
+            }
+        }
+
+        function resetUISubmitState() {
+            const btn = document.getElementById('btn-start');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-circle-play"></i> Start Scraping Leads';
+        }
+
+        function cleanURL(url) {
+            return url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+        }
+
+        function exportData(format) {
+            if (allLeads.length === 0) return;
+
+            const nameInput = document.getElementById('input-niche').value || 'leads';
+            const locInput = document.getElementById('input-location').value || 'export';
+            const filename = `${nameInput.replace(/\s+/g, '_')}_${locInput.replace(/\s+/g, '_')}`;
+
+            if (format === 'json') {
+                const blob = new Blob([JSON.stringify(allLeads, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${filename}.json`;
+                link.click();
+            } else if (format === 'csv') {
+                const headers = ['title', 'phone', 'emails', 'website', 'category', 'address', 'review_rating', 'review_count'];
+                let csvRows = [headers.join(',')];
+                
+                allLeads.forEach(lead => {
+                    const values = headers.map(header => {
+                        const val = (lead[header] || '').replace(/"/g, '""');
+                        return `"${val}"`;
+                    });
+                    csvRows.push(values.join(','));
+                });
+
+                const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${filename}.csv`;
+                link.click();
+            }
+        }
+    </script>
+</body>
+</html>

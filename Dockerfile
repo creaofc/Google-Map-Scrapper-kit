@@ -21,6 +21,7 @@ RUN npm install -g playwright@1.57.0
 ENV PLAYWRIGHT_DRIVER_PATH=/playwright-driver
 ENV PLAYWRIGHT_NODEJS_PATH=/usr/bin/node
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+ENV PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright
 
 # Create driver directory and link package so playwright-go finds package/cli.js
 RUN mkdir -p /playwright-driver && \
@@ -28,3 +29,4 @@ RUN mkdir -p /playwright-driver && \
 
 # Pre-install Chromium browser so no download is needed at job runtime
 RUN /usr/bin/node /usr/local/lib/node_modules/playwright/cli.js install chromium --with-deps
+
