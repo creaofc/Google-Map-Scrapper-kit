@@ -341,7 +341,7 @@
         /* Stats Section */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.25rem;
             margin-bottom: 1.75rem;
         }
@@ -619,6 +619,11 @@
                             <i class="fa-solid fa-list-ol"></i>
                         </div>
                     </div>
+                    
+                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1.25rem;">
+                        <input type="checkbox" id="input-emails" style="width: 1.1rem; height: 1.1rem; accent-color: var(--primary);">
+                        <label for="input-emails" style="margin-bottom: 0; cursor: pointer; color: var(--text-primary);">Extract Emails (Slower)</label>
+                    </div>
 
                     <button type="submit" id="btn-start" class="btn-submit">
                         <i class="fa-solid fa-circle-play"></i>
@@ -669,6 +674,10 @@
                         <div id="stat-website" class="stat-value">0</div>
                         <div class="stat-label">With Website</div>
                     </div>
+                    <div class="stat-card">
+                        <div id="stat-email" class="stat-value">0</div>
+                        <div class="stat-label">With Email</div>
+                    </div>
                 </div>
 
                 <!-- Table Container Card -->
@@ -695,6 +704,7 @@
                                 <tr>
                                     <th>Business Name</th>
                                     <th>Phone Number</th>
+                                    <th>Emails</th>
                                     <th>Website</th>
                                     <th>Category</th>
                                     <th>Rating</th>
@@ -732,6 +742,7 @@
             const niche = document.getElementById('input-niche').value;
             const location = document.getElementById('input-location').value;
             const limit = parseInt(document.getElementById('input-limit').value);
+            const extractEmails = document.getElementById('input-emails').checked;
 
             // Reset UI States
             const btn = document.getElementById('btn-start');
@@ -751,7 +762,7 @@
             fetch('/api/scrape', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ niche, location, limit })
+                body: JSON.stringify({ niche, location, limit, extract_emails: extractEmails })
             })
             .then(res => {
                 if (!res.ok) {
@@ -843,6 +854,15 @@
                 }
                 tr.appendChild(tdPhone);
 
+                // Emails
+                const tdEmail = document.createElement('td');
+                if (lead.emails) {
+                    tdEmail.innerHTML = `<span class="badge badge-success"><i class="fa-solid fa-envelope"></i> ${lead.emails.split(',')[0]}</span>`;
+                } else {
+                    tdEmail.innerHTML = `<span class="badge badge-muted">No Email</span>`;
+                }
+                tr.appendChild(tdEmail);
+
                 // Website
                 const tdWeb = document.createElement('td');
                 if (lead.website) {
@@ -905,12 +925,16 @@
 
             const withWeb = leads.filter(l => l.website).length;
             document.getElementById('stat-website').textContent = withWeb;
+            
+            const withEmail = leads.filter(l => l.emails).length;
+            document.getElementById('stat-email').textContent = withEmail;
         }
 
         function resetStats() {
             document.getElementById('stat-total').textContent = '0';
             document.getElementById('stat-phone').textContent = '0';
             document.getElementById('stat-website').textContent = '0';
+            document.getElementById('stat-email').textContent = '0';
         }
 
         function clearTable() {

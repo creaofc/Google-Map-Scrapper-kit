@@ -141,6 +141,9 @@ class ScraperHandler(http.server.SimpleHTTPRequestHandler):
                 location = data.get("location", "").strip()
                 limit = int(data.get("limit", 50))
 
+                extract_emails = data.get("extract_emails", True)
+                fast_mode = not extract_emails
+
                 if not niche or not location:
                     self.send_response(400)
                     self.end_headers()
@@ -169,11 +172,11 @@ class ScraperHandler(http.server.SimpleHTTPRequestHandler):
                     "zoom": 15,
                     "lat": lat,
                     "lon": lon,
-                    "fast_mode": False,
+                    "fast_mode": fast_mode,
                     "radius": 10000,
                     "depth": depth,
-                    "email": True,  # Enable email extraction by default
-                    "max_time": 600  # 10 minutes max limit
+                    "email": extract_emails,  # Enable email extraction if requested
+                    "max_time": 3600 if extract_emails else 600  # 1 hour max limit if extracting emails
                 }
 
                 # Submit to scraper container
